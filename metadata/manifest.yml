@@ -1,0 +1,119 @@
+Name: owf
+Cartridge-Short-Name: OWF
+Cartridge-Vendor: shadowsoft
+Cartridge-Version: '0.0.1'
+Source-Url: https://github.com/Shadow-Soft/owf-widget-cartridge.git
+Compatible-Versions: ['0.0.2', '0.0.3']
+Display-Name: Ozone Widget Framework 7 (OWF 7)
+Description: "Build and deploy Ozone Widgets in the cloud."
+Version: '7.0'
+Versions: ['7.0']
+License: Apache
+License-Url: http://the.apache.com/license/url
+Vendor:  Shadow-Soft 
+Categories:
+  - service
+  - java
+  - javascript
+  - web_framework
+Website: http://shadow-soft.com/
+Help-Topics:
+    "Developer Center": https://github.com/Shadow-Soft/owf-cartridge
+Cart-Data:
+  - Key: "username"
+    Type: cart_data
+    Description: "Root user on PostgreSQL database"
+  - Key: "password"
+    Type: cart_data
+    Description: "Password for root user on PostgreSQL database"
+  - Key: database_name
+    Type: cart_data
+    Description: "PostgreSQL DB name"
+  - Key: connection_url
+    Type: cart_data
+    Description: "PostgreSQL DB connection URL"
+  - Key: OPENSHIFT_JBOSSEWS_LOG_DIR
+    Type: environment
+    Description: "Directory to store application log files."
+  - Key: OPENSHIFT_TMP_DIR
+    Type: environment
+    Description: "Directory to store application temporary files."
+  - Key: OPENSHIFT_REPO_DIR
+    Type: environment
+    Description: "Application root directory where application files reside. This directory is reset every time you do a git-push"
+  - Key: OPENSHIFT_JBOSSEWS_HTTP_PORT
+    Type: environment
+    Description: "Internal port to which the web-framework binds to."
+  - Key: OPENSHIFT_JBOSSEWS_IP
+    Type: environment
+    Description: "Internal IP to which the web-framework binds to."
+  - Key: OPENSHIFT_APP_DNS
+    Type: environment
+    Description: "Fully qualified domain name for the application."
+  - Key: OPENSHIFT_APP_NAME
+    Type: environment
+    Description: "Application name"
+  - Key: OPENSHIFT_DATA_DIR
+    Type: environment
+    Description: "Directory to store application data files. Preserved across git-pushes. Not shared across gears."
+  - Key: OPENSHIFT_APP_UUID
+    Type: environment
+    Description: "Unique ID which identified the application. Does not change between gears."
+  - Key: OPENSHIFT_GEAR_UUID
+    Type: environment
+    Description: "Unique ID which identified the gear. This value changes between gears."
+Provides:
+  - "jbossews-2.0"
+  - "jbossews"
+  - "jbossews(version) = 2.0.0"
+  - "jbossews(version) >= 2.0"
+  - "jboss-ews-2.0"
+  - "jboss-ews-2.0.0"
+  - "postgresql-8.4"
+  - "postgresql"
+  - "owf-7.3"
+  - "owf"
+  - "owf(version) = 7.3"
+  - "owf(version) >= 7.0"
+Conflicts:
+  - mysql-5.1
+Publishes:
+  get-internal-uri:
+    Type: "NET_TCP:http"
+  publish-http-url:
+    Type: "NET_TCP:httpd-proxy-info"
+  publish-gear-endpoint:
+    Type: "NET_TCP:gear-endpoint-info"
+  publish-db-connection-info:
+    Type: "ENV:NET_TCP:db:connection-info"
+Subscribes:
+  set-env:
+    Type: "ENV:*"
+    Required: false
+  set-jdbc-info:
+    Type: "NET_TCP:jdbc"
+Group-Overrides:
+  - components:
+    - "jbossews-2.0"
+    - web_proxy
+Endpoints:
+  - Private-IP-Name:   IP
+    Private-Port-Name: HTTP_PORT
+    Private-Port:      8080
+    Public-Port-Name:  HTTP_PROXY_PORT
+    Mappings:
+      - Frontend:      ""
+        Backend:       ""
+        Options:       { "websocket": 1}
+      - Frontend:      "/health"
+        Backend:       ""
+        Options:       { health: true}
+  - Private-IP-Name:   IP
+    Private-Port-Name: JPDA_PORT
+    Private-Port:      8787
+  - Private-IP-Name:   DB_HOST
+    Private-Port-Name: DB_PORT
+    Private-Port:      5432
+    Public-Port-Name:  DB_PROXY_POR
+Additional-Control-Actions:
+    - threaddump

@@ -1,0 +1,47 @@
+#!/bin/bash -eu
+
+case "$1" in
+  -v|--version)
+    version="$2"
+esac
+
+source ${OPENSHIFT_OWF_DIR}/bin/util
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+cp $OPENSHIFT_OWF_DIR/webapps/ROOT.war $OPENSHIFT_REPO_DIR/webapps
+
+socket=$OPENSHIFT_POSTGRESQL_DB_SOCKET
+user=$OPENSHIFT_POSTGRESQL_DB_USERNAME
+pass=$OPENSHIFT_POSTGRESQL_DB_PASSWORD
+db=$OPENSHIFT_APP_NAME
+
+# Create a user based on OPENSHIFT_POSTGRESQL_DB_USERNAME
+{
+  createuser --superuser --createdb --createrole -U postgres -h $socket $user
+} || error "Failed to create initial root user" 187
+
+# Create a database based on OPENSHIFT_APP_NAME
+{
+  createdb -O $user -U postgres -h $socket $db
+} || error "Failed to create database" 188
+
+# import the initial OWF preferences
+{
+  echo "seeding OWF database"
+  psql -d $db -h $socket -U postgres -f ${OPENSHIFT_OWF_DIR}/conf/owf/PostgreSQLPrefsInitialCreate.sql
+} || error "Failed to import initial OWF preferences"
+
+# Set the user's password based on OPENSHIFT_POSTGRESQL_DB_PASSWORD
+{
+  echo "
+  ALTER USER ${user} PASSWORD '${pass}';
+  " | psql -d $db -h $socket -U postgres
+} || error "Failed to change password for initial root user" 187
+
+# copy the owf.war
+{
+  echo "Deploying OWF version ${version}"
+  cp ${OPENSHIFT_OWF_DIR}/versions/${version}/owf.war ${OPENSHIFT_OWF_DIR}/webapps
+}
+
+

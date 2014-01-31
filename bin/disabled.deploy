@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+set -x
+
+tmp=${OPENSHIFT_OWF_DIR}/tmp
+if [ -d $tmp ]; then
+  for d in $tmp/*; do
+      if [ -d $d ]; then
+          echo "Emptying tmp dir: $d"
+          rm -rf $d/* $d/.[^.]*
+      fi
+  done
+fi
+
+# BAF: commented for the production version.  Uncomment for the Dev version (e.g. the "MyWidget" example)
+#if [ -d ${OPENSHIFT_REPO_DIR}/webapps ]; then
+#   sync all webapps, but don't touch the OWF app
+#  rsync -r --exclude 'owf' --exclude 'owf.war' --delete ${OPENSHIFT_REPO_DIR}/webapps/ ${OPENSHIFT_OWF_DIR}/webapps/
+#else
+#  pushd ${OPENSHIFT_OWF_DIR}/webapps/
+#   remove all webapps except the OWF app
+#  find . ! -path . ! -name '*owf*' -execdir rm -rf {} +
+#fi

@@ -1,0 +1,21 @@
+ozone.host = <%= ENV['OPENSHIFT_OWF_DB_HOST'] %>
+ozone.port = <%= ENV['OPENSHIFT_OWF_HTTP_PORT'] %>
+ozone.unsecurePort = <%= ENV['OPENSHIFT_OWF_HTTP_PORT'] %>
+
+#CAS SETTINGS
+ozone.cas.serverName=cas
+ozone.cas.serverLoginLocation=cas/login
+ozone.cas.serverLogoutLocation=cas/logout
+
+#OWF CAS SETTINGS
+ozone.cas.owf.serverSecureReceptorLocation=owf/secure/receptor
+ozone.cas.owf.jSpringCasSecurityCheckLocation=owf/j_spring_cas_security_check
+
+#MP CAS SETTINGS
+ozone.cas.marketplace.serverSecureReceptorLocation=marketplace/secure/receptor
+ozone.cas.marketplace.jSpringCasSecurityCheckLocation=marketplace/j_spring_cas_security_check
+
+#METRIC CAS SETTINGS
+ozone.cas.metric.serverSecureReceptorLocation=metric/secure/receptor
+ozone.cas.metric.jSpringCasSecurityCheckLocation=metric/j_spring_cas_security_check
+

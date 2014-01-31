@@ -1,0 +1,1382 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: dashboard; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE dashboard (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    isdefault boolean NOT NULL,
+    dashboard_position integer NOT NULL,
+    altered_by_admin boolean NOT NULL,
+    guid character varying(255) NOT NULL,
+    name character varying(200) NOT NULL,
+    user_id bigint,
+    description character varying(4000),
+    created_by_id bigint,
+    created_date timestamp with time zone,
+    edited_by_id bigint,
+    edited_date timestamp with time zone,
+    layout_config text,
+    locked boolean DEFAULT false,
+    stack_id bigint
+);
+
+
+ALTER TABLE public.dashboard OWNER TO postgres;
+
+--
+-- Name: databasechangelog; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE databasechangelog (
+    id character varying(63) NOT NULL,
+    author character varying(63) NOT NULL,
+    filename character varying(200) NOT NULL,
+    dateexecuted timestamp with time zone NOT NULL,
+    orderexecuted integer NOT NULL,
+    exectype character varying(10) NOT NULL,
+    md5sum character varying(35),
+    description character varying(255),
+    comments character varying(255),
+    tag character varying(255),
+    liquibase character varying(20)
+);
+
+
+ALTER TABLE public.databasechangelog OWNER TO postgres;
+
+--
+-- Name: databasechangeloglock; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE databasechangeloglock (
+    id integer NOT NULL,
+    locked boolean NOT NULL,
+    lockgranted timestamp with time zone,
+    lockedby character varying(255)
+);
+
+
+ALTER TABLE public.databasechangeloglock OWNER TO postgres;
+
+--
+-- Name: domain_mapping; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE domain_mapping (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    src_id bigint NOT NULL,
+    src_type character varying(255) NOT NULL,
+    relationship_type character varying(8),
+    dest_id bigint NOT NULL,
+    dest_type character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.domain_mapping OWNER TO postgres;
+
+--
+-- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE hibernate_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hibernate_sequence OWNER TO postgres;
+
+--
+-- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('hibernate_sequence', 73, true);
+
+
+--
+-- Name: intent; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE intent (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    action character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.intent OWNER TO postgres;
+
+--
+-- Name: intent_data_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE intent_data_type (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    data_type character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.intent_data_type OWNER TO postgres;
+
+--
+-- Name: intent_data_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE intent_data_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.intent_data_type_id_seq OWNER TO postgres;
+
+--
+-- Name: intent_data_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE intent_data_type_id_seq OWNED BY intent_data_type.id;
+
+
+--
+-- Name: intent_data_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('intent_data_type_id_seq', 1, false);
+
+
+--
+-- Name: intent_data_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE intent_data_types (
+    intent_data_type_id bigint NOT NULL,
+    intent_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.intent_data_types OWNER TO postgres;
+
+--
+-- Name: intent_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE intent_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.intent_id_seq OWNER TO postgres;
+
+--
+-- Name: intent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE intent_id_seq OWNED BY intent.id;
+
+
+--
+-- Name: intent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('intent_id_seq', 1, false);
+
+
+--
+-- Name: owf_group; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE owf_group (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    status character varying(8) NOT NULL,
+    email character varying(255),
+    description character varying(255),
+    name character varying(200) NOT NULL,
+    automatic boolean NOT NULL,
+    display_name character varying(200),
+    stack_default boolean DEFAULT false
+);
+
+
+ALTER TABLE public.owf_group OWNER TO postgres;
+
+--
+-- Name: owf_group_people; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE owf_group_people (
+    group_id bigint NOT NULL,
+    person_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.owf_group_people OWNER TO postgres;
+
+--
+-- Name: person; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE person (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    enabled boolean NOT NULL,
+    user_real_name character varying(200) NOT NULL,
+    username character varying(200) NOT NULL,
+    last_login timestamp without time zone,
+    email_show boolean NOT NULL,
+    email character varying(255),
+    prev_login timestamp without time zone,
+    description character varying(255)
+);
+
+
+ALTER TABLE public.person OWNER TO postgres;
+
+--
+-- Name: person_widget_definition; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE person_widget_definition (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    person_id bigint NOT NULL,
+    visible boolean NOT NULL,
+    pwd_position integer NOT NULL,
+    widget_definition_id bigint NOT NULL,
+    group_widget boolean DEFAULT false,
+    favorite boolean DEFAULT false,
+    display_name character varying(256),
+    disabled boolean DEFAULT false,
+    user_widget boolean DEFAULT false
+);
+
+
+ALTER TABLE public.person_widget_definition OWNER TO postgres;
+
+--
+-- Name: preference; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE preference (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    value text NOT NULL,
+    path character varying(200) NOT NULL,
+    user_id bigint NOT NULL,
+    namespace character varying(200) NOT NULL
+);
+
+
+ALTER TABLE public.preference OWNER TO postgres;
+
+--
+-- Name: requestmap; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE requestmap (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    url character varying(255) NOT NULL,
+    config_attribute character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.requestmap OWNER TO postgres;
+
+--
+-- Name: role; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE role (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    authority character varying(255) NOT NULL,
+    description character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.role OWNER TO postgres;
+
+--
+-- Name: role_people; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE role_people (
+    role_id bigint NOT NULL,
+    person_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.role_people OWNER TO postgres;
+
+--
+-- Name: stack; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE stack (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    name character varying(256) NOT NULL,
+    description character varying(4000),
+    stack_context character varying(200) NOT NULL,
+    image_url character varying(2083),
+    descriptor_url character varying(2083),
+    unique_widget_count bigint DEFAULT 0::bigint
+);
+
+
+ALTER TABLE public.stack OWNER TO postgres;
+
+--
+-- Name: stack_groups; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE stack_groups (
+    group_id bigint NOT NULL,
+    stack_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.stack_groups OWNER TO postgres;
+
+--
+-- Name: stack_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE stack_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.stack_id_seq OWNER TO postgres;
+
+--
+-- Name: stack_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE stack_id_seq OWNED BY stack.id;
+
+
+--
+-- Name: stack_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('stack_id_seq', 1, false);
+
+
+--
+-- Name: tag_links; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tag_links (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    pos bigint,
+    visible boolean,
+    tag_ref bigint NOT NULL,
+    tag_id bigint NOT NULL,
+    type character varying(255) NOT NULL,
+    editable boolean
+);
+
+
+ALTER TABLE public.tag_links OWNER TO postgres;
+
+--
+-- Name: tags; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tags (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.tags OWNER TO postgres;
+
+--
+-- Name: widget_def_intent; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE widget_def_intent (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    receive boolean NOT NULL,
+    send boolean NOT NULL,
+    intent_id bigint NOT NULL,
+    widget_definition_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.widget_def_intent OWNER TO postgres;
+
+--
+-- Name: widget_def_intent_data_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE widget_def_intent_data_types (
+    intent_data_type_id bigint NOT NULL,
+    widget_definition_intent_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.widget_def_intent_data_types OWNER TO postgres;
+
+--
+-- Name: widget_def_intent_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE widget_def_intent_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.widget_def_intent_id_seq OWNER TO postgres;
+
+--
+-- Name: widget_def_intent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE widget_def_intent_id_seq OWNED BY widget_def_intent.id;
+
+
+--
+-- Name: widget_def_intent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('widget_def_intent_id_seq', 1, false);
+
+
+--
+-- Name: widget_definition; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE widget_definition (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    visible boolean NOT NULL,
+    image_url_large character varying(2083) NOT NULL,
+    image_url_small character varying(2083) NOT NULL,
+    singleton boolean NOT NULL,
+    width integer NOT NULL,
+    widget_version character varying(2083),
+    height integer NOT NULL,
+    widget_url character varying(2083) NOT NULL,
+    widget_guid character varying(255) NOT NULL,
+    display_name character varying(256) NOT NULL,
+    background boolean,
+    universal_name character varying(255),
+    descriptor_url character varying(2083),
+    description character varying(4000) DEFAULT ''::character varying
+);
+
+
+ALTER TABLE public.widget_definition OWNER TO postgres;
+
+--
+-- Name: widget_definition_widget_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE widget_definition_widget_types (
+    widget_definition_id bigint NOT NULL,
+    widget_type_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.widget_definition_widget_types OWNER TO postgres;
+
+--
+-- Name: widget_type; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE widget_type (
+    id bigint NOT NULL,
+    version bigint NOT NULL,
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.widget_type OWNER TO postgres;
+
+--
+-- Name: widget_type_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE widget_type_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.widget_type_id_seq OWNER TO postgres;
+
+--
+-- Name: widget_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE widget_type_id_seq OWNED BY widget_type.id;
+
+
+--
+-- Name: widget_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('widget_type_id_seq', 1, false);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY intent ALTER COLUMN id SET DEFAULT nextval('intent_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY intent_data_type ALTER COLUMN id SET DEFAULT nextval('intent_data_type_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY stack ALTER COLUMN id SET DEFAULT nextval('stack_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_def_intent ALTER COLUMN id SET DEFAULT nextval('widget_def_intent_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_type ALTER COLUMN id SET DEFAULT nextval('widget_type_id_seq'::regclass);
+
+
+--
+-- Data for Name: dashboard; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY dashboard (id, version, isdefault, dashboard_position, altered_by_admin, guid, name, user_id, description, created_by_id, created_date, edited_by_id, edited_date, layout_config, locked, stack_id) FROM stdin;
+64	3	t	0	f	1949b42f-dc09-e596-3f0e-65baf93e050a	Getting Started	4	 	4	2013-09-23 13:38:08.244-07	4	2013-09-23 13:47:49.844-07	{"cls":null,"height":"100%","items":[],"paneType":"desktoppane","xtype":"desktoppane","widgets":[{"universalName":"gettingstarted.dev.patvmackinc.com","widgetGuid":"881d57bf-00d0-64d4-aeb7-efda80f3c2c0","uniqueId":"2a411f47-d266-ce74-ab17-18243f7f60b3","dashboardGuid":"1949b42f-dc09-e596-3f0e-65baf93e050a","paneGuid":"932ea4b1-bc0b-24f6-75d3-1e2094d75954","name":"Getting Started","active":true,"x":454,"y":32,"minimized":false,"maximized":false,"pinned":false,"collapsed":false,"columnPos":0,"buttonId":null,"buttonOpened":false,"region":"none","statePosition":5,"intentConfig":null,"launchData":null,"singleton":false,"floatingWidget":false,"background":false,"zIndex":19060,"height":800,"width":800}],"defaultSettings":{"widgetStates":{"2b5cc758-d9bd-406d-8faf-b78d4be9ebc4":{"x":0,"y":0,"height":671,"width":1288,"timestamp":1379969237348},"836dd5a8-b892-443f-b268-5aee903846a0":{"x":0,"y":0,"height":765,"width":1692,"timestamp":1379969230780},"881d57bf-00d0-64d4-aeb7-efda80f3c2c0":{"x":454,"y":32,"height":800,"width":800,"timestamp":1379969263576}}}}	f	\N
+\.
+
+
+--
+-- Data for Name: databasechangelog; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY databasechangelog (id, author, filename, dateexecuted, orderexecuted, exectype, md5sum, description, comments, tag, liquibase) FROM stdin;
+3.7.0-1	owf	changelog_3.7.0.groovy	2013-09-23 13:27:48.18558-07	1	EXECUTED	3:a12ee34aa1e77bc2ab3176c74c3113b8	Custom SQL		\N	2.0.1
+3.8.0-1	owf	changelog_3.8.0.groovy	2013-09-23 13:27:48.186678-07	2	EXECUTED	3:d66582e573cee33f424ebb952decd92d	Drop Not-Null Constraint		\N	2.0.1
+3.8.0-2	owf	changelog_3.8.0.groovy	2013-09-23 13:27:48.189147-07	3	EXECUTED	3:43600e1eebd0b612def9a76758daa403	Add Column	Added description column into Dashboard Table	\N	2.0.1
+3.8.0-3	owf	changelog_3.8.0.groovy	2013-09-23 13:27:48.191242-07	4	EXECUTED	3:cd0a0df59ba7079055230181279b9fe5	Add Column		\N	2.0.1
+3.8.0-4	owf	changelog_3.8.0.groovy	2013-09-23 13:27:48.192793-07	5	EXECUTED	3:b98ec98220fc4669acb11cc65cba959b	Add Foreign Key Constraint		\N	2.0.1
+3.8.0-5	owf	changelog_3.8.0.groovy	2013-09-23 13:27:48.194274-07	6	EXECUTED	3:30cd6eb8e32c5bb622cd48a6730e86e1	Add Foreign Key Constraint		\N	2.0.1
+3.8.0-9	owf	changelog_3.8.0.groovy	2013-09-23 13:27:48.195172-07	7	EXECUTED	3:c663eb75620ae74e0f7ca517d8bd4c1b	Drop Not-Null Constraint		\N	2.0.1
+4.0.0-3	owf	changelog_4.0.0.groovy	2013-09-23 13:27:48.19591-07	8	EXECUTED	3:d066b39ebec901b63dbe5b674825449d	Add Column	Added defaultSettings column into Dashboard Table	\N	2.0.1
+4.0.0-4	owf	changelog_4.0.0.groovy	2013-09-23 13:27:48.197169-07	9	EXECUTED	3:c4ccbcf8a10f33b5063af97a9d15d28c	Add Column	Added background column for WidgetDefinition	\N	2.0.1
+4.0.0-47	owf	changelog_4.0.0.groovy	2013-09-23 13:27:48.20498-07	10	EXECUTED	3:967a5a6cb7f1d94dfef9beb90b77e1e5	Add Column	Added showLaunchMenu column into Dashboard Table	\N	2.0.1
+4.0.0-48	owf	changelog_4.0.0.groovy	2013-09-23 13:27:48.21297-07	11	EXECUTED	3:43eac589305fd819d29fe84a43414c3f	Create Table (x2), Add Primary Key, Add Foreign Key Constraint (x2)	Create widget type table and linking table	\N	2.0.1
+4.0.0-51	owf	changelog_4.0.0.groovy	2013-09-23 13:27:48.21451-07	12	EXECUTED	3:dc8cf89d14b68c19d487908ef28c89b1	Insert Row (x3)	Add widget types to table	\N	2.0.1
+4.0.0-56	owf	changelog_4.0.0.groovy	2013-09-23 13:27:48.219104-07	13	EXECUTED	3:7e4d6568d91e79149f8b895501eb8579	Modify data type	Updating display_name column to 256 chars	\N	2.0.1
+5.0.0-1	owf	changelog_5.0.0.groovy	2013-09-23 13:27:48.22014-07	14	EXECUTED	3:42d9c4bdcdff38a4fbe40bd1ec78d9b1	Add Column	Add display name to group	\N	2.0.1
+5.0.0-3	owf	changelog_5.0.0.groovy	2013-09-23 13:27:48.220865-07	15	EXECUTED	3:aa2aca168ad6eaeea8509fd642d8c17b	Insert Row	Add metric widget types to table	\N	2.0.1
+6.0.0-1	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.221608-07	16	EXECUTED	3:b7a17650e4cfde415fdbbcc4f2bd1317	Add Column	Add universal_name to widgetdefinition	\N	2.0.1
+6.0.0-2	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.222377-07	17	EXECUTED	3:30ea4354058c7a09bfafb6acabfd1e33	Add Column	Add layoutConfig to dashboard	\N	2.0.1
+6.0.0-3	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.223196-07	18	EXECUTED	3:6ce1db42048bc63ece1be0c3f4669a52	Add Column	Add descriptor_url to widgetdefinition	\N	2.0.1
+6.0.0-4	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.224614-07	19	EXECUTED	3:4e940a0bdfea36b98c62330e4b373dd3	Drop Table	Remove EventingConnections table and association with DashboardWidgetState	\N	2.0.1
+6.0.0-5	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.230905-07	20	EXECUTED	3:2c40b74eb7eb29a286ac641320a97b4d	Create Table	Create intent table	\N	2.0.1
+6.0.0-6	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.235154-07	21	EXECUTED	3:008f636cf428abbd60459975d28e62a1	Create Table	Create intent_data_type table	\N	2.0.1
+6.0.0-7	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.237775-07	22	EXECUTED	3:b462f738ef9c30634a0a47d245d16a59	Create Table	Create intent_data_types table	\N	2.0.1
+6.0.0-8	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.240361-07	23	EXECUTED	3:ee497899a41d5cc2798af5cfc277aecb	Add Foreign Key Constraint (x2)	Add foreign constraint for intent_data_type_id and intent_id in intent_data_types table	\N	2.0.1
+6.0.0-9	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.243804-07	24	EXECUTED	3:8dda2a300eac867527577e37dabf3187	Create Table	Create widget_def_intent table	\N	2.0.1
+6.0.0-10	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.245765-07	25	EXECUTED	3:e5d364edc24ace7b9b89d3854bb70408	Add Foreign Key Constraint	Add foreign constraint for widget_definition_id in widget_def_intent table	\N	2.0.1
+6.0.0-11	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.247378-07	26	EXECUTED	3:fcf69ebd060340afd1483c2f4588f456	Add Foreign Key Constraint	Add foreign constraint for intent_id in widget_definition_intent table	\N	2.0.1
+6.0.0-12	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.248496-07	27	EXECUTED	3:05c50cdf2e21818c6986e5ef2d8c9f50	Create Table	Create widget_def_intent_data_types table	\N	2.0.1
+6.0.0-13	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.251174-07	28	EXECUTED	3:3250f92e3b85fec3db493d11b53445e2	Add Foreign Key Constraint (x2)	Add foreign constraint for intent_data_type_id and widget_definition_intent_id in widget_def_intent_data_types table	\N	2.0.1
+6.0.0-14	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.252073-07	29	EXECUTED	3:897a5aa2802104b8f90bcde737c47002	Add Column	Add intentConfig column to dashboard table	\N	2.0.1
+6.0.0-15	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.257238-07	30	EXECUTED	3:a58c7f9ab7dcc8c733d3a16c25adc558	Add Column	Added description column into Widget Definition table	\N	2.0.1
+6.0.0-16	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.260892-07	31	EXECUTED	3:9624d22cdbed36b5bbce5da92bdb1bfc	Add Column	Add groupWidget property to personwidgetdefinition	\N	2.0.1
+6.0.0-17	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.268178-07	32	EXECUTED	3:92a97333d2f7b5f17e0a541712847a54	Add Column	Add favorite property to personwidgetdefinition	\N	2.0.1
+6.0.0-44	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.270101-07	33	EXECUTED	3:a0a7528d5494cd0f02b38b3f99b2cfe4	Drop Not-Null Constraint		\N	2.0.1
+6.0.0-53	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.281024-07	34	EXECUTED	3:9f398a44008d12aee688e347940b7adf	Add Column	Add locked property to dashboard	\N	2.0.1
+6.0.0-55	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.282993-07	35	EXECUTED	3:2aa790687f711ca1d930c1aa24fadd0c	Add Column	Add display name field to pwd	\N	2.0.1
+6.0.0-56	owf	changelog_6.0.0.groovy	2013-09-23 13:27:48.290283-07	36	EXECUTED	3:ca86586d796b6e61467c6fc7cb0a787c	Add Column	Add disabled field to pwd	\N	2.0.1
+7.0.0-1	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.30249-07	37	EXECUTED	3:9c64b0b8b8cb507555f0c02c00cb382b	Modify data type	Expand a widget definition's description field to 4000 to match Marketplace	\N	2.0.1
+7.0.0-2	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.305471-07	38	EXECUTED	3:d1ab9c56671573cf7cde5a4e7c13652c	Drop Table	Remove DashboardWidgetState since it is no longer used.	\N	2.0.1
+7.0.0-4	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.307252-07	39	EXECUTED	3:21b5b103a5b9e7134b2bbb0a7686e3cf	Drop Column	Remove show_launch_menu since it is no longer used.	\N	2.0.1
+7.0.0-5	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.3093-07	40	EXECUTED	3:634c7ed646b89e253102d12b6818c245	Drop Column	Remove layout since it is no longer used.	\N	2.0.1
+7.0.0-6	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.311348-07	41	EXECUTED	3:ef21c5e1a70b81160e2ed6989fc1afa6	Drop Column	Remove intent_config since it is no longer used.	\N	2.0.1
+7.0.0-7	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.313418-07	42	EXECUTED	3:9ee1cd65b85caaca3178939bac1e0fcf	Drop Column	Remove default_settings since it is no longer used.	\N	2.0.1
+7.0.0-8	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.316016-07	43	EXECUTED	3:ef688a16b0055a8024a489393bcfc987	Drop Column	Remove column_count since it is no longer used.	\N	2.0.1
+7.0.0-9	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.327408-07	44	EXECUTED	3:43e9c996af93d8cface8845446b8a525	Create Table	Create stack table	\N	2.0.1
+7.0.0-10	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.329396-07	45	EXECUTED	3:62f6507a0ac6b50fb383b2a47ba702a8	Create Table	Create stack_groups table	\N	2.0.1
+7.0.0-12	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.334638-07	46	EXECUTED	3:7a64e2e16d79e54338e9ec959602447a	Add Primary Key	Add primary key constraint for group_id and stack_id in stack_groups table	\N	2.0.1
+7.0.0-13	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.339195-07	47	EXECUTED	3:0e9ce4f940d8f89b0fd983abc89ee775	Add Foreign Key Constraint (x2)	Add foreign key constraints for group_id and stack_id in stack_groups table	\N	2.0.1
+7.0.0-14	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.347404-07	48	EXECUTED	3:803b99533e3b4d760c15e2f1eca18e05	Add Column	Add stack_default field to group	\N	2.0.1
+7.0.0-17	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.349473-07	49	EXECUTED	3:792a3b1d54f044047df124e8dd62d247	Custom SQL	Insert OWF stack	\N	2.0.1
+7.0.0-20	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.350969-07	50	EXECUTED	3:b909f323799a063d70f9f5f1ab19b728	Custom SQL	Insert OWF stack default group	\N	2.0.1
+7.0.0-21	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.354809-07	51	EXECUTED	3:32c56c09a37ffceb75742132f42ddf73	Custom SQL		\N	2.0.1
+7.0.0-22	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.356122-07	52	EXECUTED	3:7146f45f54d8db1d72abb498d691cebb	Add Column	Add a reference to a host stack to dashboard records to track where user instances should appear	\N	2.0.1
+7.0.0-23	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.359354-07	53	EXECUTED	3:4d6a39028c8a5cc0a85b8b37fbf1b1fc	Add Foreign Key Constraint	Add foreign key constraint for stack_id in the dashboard table	\N	2.0.1
+7.0.0-24	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.371435-07	54	EXECUTED	3:f1e6830542a856459733effeca8aaa24	Add Column	Add a property to track the count of unique widgets present on the dashboards of a stack	\N	2.0.1
+7.0.0-25	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.373146-07	55	EXECUTED	3:ac445082cf2ee5903046bef22276a996	Custom SQL		\N	2.0.1
+7.0.0-26	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.375253-07	56	EXECUTED	3:74dc7504043a1f24e2d86d75a2dab571	Delete Data	Delete OWF Stack Group	\N	2.0.1
+7.0.0-27	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.377344-07	57	EXECUTED	3:cae136582b06f1ed04a6309814236cdc	Delete Data	Delete OWF Stack	\N	2.0.1
+7.0.0-28	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.387382-07	58	EXECUTED	3:f1bf16779c9d7419bc7cc94e81687786	Add Column	Add user_widget field to person_widget_definition table	\N	2.0.1
+7.0.0-53	owf	changelog_7.0.0.groovy	2013-09-23 13:27:48.399713-07	59	EXECUTED	3:95913c657b14ecdbb8c9f85fc0a071b1	Modify data type	Expand a dashboard's description field to 4000 to match Marketplace	\N	2.0.1
+\.
+
+
+--
+-- Data for Name: databasechangeloglock; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY databasechangeloglock (id, locked, lockgranted, lockedby) FROM stdin;
+1	f	\N	\N
+\.
+
+
+--
+-- Data for Name: domain_mapping; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY domain_mapping (id, version, src_id, src_type, relationship_type, dest_id, dest_type) FROM stdin;
+33	0	32	group	owns	6	widget_definition
+34	0	32	group	owns	9	widget_definition
+35	0	32	group	owns	11	widget_definition
+36	0	32	group	owns	13	widget_definition
+37	0	32	group	owns	15	widget_definition
+38	0	32	group	owns	17	widget_definition
+39	0	32	group	owns	19	widget_definition
+40	0	32	group	owns	21	widget_definition
+41	0	32	group	owns	23	widget_definition
+42	0	32	group	owns	25	widget_definition
+68	0	32	group	owns	65	widget_definition
+69	0	5	group	owns	65	widget_definition
+\.
+
+
+--
+-- Data for Name: intent; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY intent (id, version, action) FROM stdin;
+\.
+
+
+--
+-- Data for Name: intent_data_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY intent_data_type (id, version, data_type) FROM stdin;
+\.
+
+
+--
+-- Data for Name: intent_data_types; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY intent_data_types (intent_data_type_id, intent_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: owf_group; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY owf_group (id, version, status, email, description, name, automatic, display_name, stack_default) FROM stdin;
+5	0	active	\N	OWF Users	OWF Users	t	OWF Users	f
+32	0	active	\N	OWF Administrators	OWF Administrators	t	OWF Administrators	f
+\.
+
+
+--
+-- Data for Name: owf_group_people; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY owf_group_people (group_id, person_id) FROM stdin;
+5	4
+32	4
+\.
+
+
+--
+-- Data for Name: person; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY person (id, version, enabled, user_real_name, username, last_login, email_show, email, prev_login, description) FROM stdin;
+3	0	t	DEFAULT_USER	DEFAULT_USER	2013-09-23 13:29:16.85	f	\N	\N	\N
+4	0	t	jimi	jimi	2013-09-23 13:37:01.447	f	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: person_widget_definition; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY person_widget_definition (id, version, person_id, visible, pwd_position, widget_definition_id, group_widget, favorite, display_name, disabled, user_widget) FROM stdin;
+43	0	4	t	-1	6	t	f	\N	f	f
+45	0	4	t	0	9	t	f	\N	f	f
+47	0	4	t	1	11	t	f	\N	f	f
+49	0	4	t	2	13	t	f	\N	f	f
+51	0	4	t	3	15	t	f	\N	f	f
+53	0	4	t	4	17	t	f	\N	f	f
+55	0	4	t	5	19	t	f	\N	f	f
+57	0	4	t	6	21	t	f	\N	f	f
+59	0	4	t	7	23	t	f	\N	f	f
+61	0	4	t	8	25	t	f	\N	f	f
+70	1	4	t	0	65	t	f	\N	f	f
+\.
+
+
+--
+-- Data for Name: preference; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY preference (id, version, value, path, user_id, namespace) FROM stdin;
+27	0	4495e587-6f62-4e37-b21c-7a4038e45c30	guid_to_launch	4	owf.admin.UserEditCopy
+28	0	836dd5a8-b892-443f-b268-5aee903846a0	guid_to_launch	4	owf.admin.WidgetEditCopy
+29	0	519bd55f-8cfc-4c45-9259-5ba8fb886087	guid_to_launch	4	owf.admin.GroupEditCopy
+30	0	79b46039-f4dd-454b-b1e2-234dac1954e5	guid_to_launch	4	owf.admin.DashboardEditCopy
+31	0	a5d31c9c-dbb6-41fc-8719-f4875dbdbc8f	guid_to_launch	4	owf.admin.StackEditCopy
+63	0	{"state":"docked","position":[0,0]}	state	4	owf.banner
+73	0	{"favStore":[]}	widget_launcher	4	owf
+\.
+
+
+--
+-- Data for Name: requestmap; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY requestmap (id, version, url, config_attribute) FROM stdin;
+\.
+
+
+--
+-- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY role (id, version, authority, description) FROM stdin;
+\.
+
+
+--
+-- Data for Name: role_people; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY role_people (role_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: stack; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY stack (id, version, name, description, stack_context, image_url, descriptor_url, unique_widget_count) FROM stdin;
+\.
+
+
+--
+-- Data for Name: stack_groups; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY stack_groups (group_id, stack_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tag_links; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tag_links (id, version, pos, visible, tag_ref, tag_id, type, editable) FROM stdin;
+8	0	-1	t	6	7	widgetDefinition	t
+10	0	-1	t	9	7	widgetDefinition	t
+12	0	-1	t	11	7	widgetDefinition	t
+14	0	-1	t	13	7	widgetDefinition	t
+16	0	-1	t	15	7	widgetDefinition	t
+18	0	-1	t	17	7	widgetDefinition	t
+20	0	-1	t	19	7	widgetDefinition	t
+22	0	-1	t	21	7	widgetDefinition	t
+24	0	-1	t	23	7	widgetDefinition	t
+26	0	-1	t	25	7	widgetDefinition	t
+44	0	-1	t	43	7	personWidgetDefinition	\N
+46	0	-1	t	45	7	personWidgetDefinition	\N
+48	0	-1	t	47	7	personWidgetDefinition	\N
+50	0	-1	t	49	7	personWidgetDefinition	\N
+52	0	-1	t	51	7	personWidgetDefinition	\N
+54	0	-1	t	53	7	personWidgetDefinition	\N
+56	0	-1	t	55	7	personWidgetDefinition	\N
+58	0	-1	t	57	7	personWidgetDefinition	\N
+60	0	-1	t	59	7	personWidgetDefinition	\N
+62	0	-1	t	61	7	personWidgetDefinition	\N
+71	0	-1	t	70	66	personWidgetDefinition	\N
+72	0	-1	t	65	66	widgetDefinition	t
+\.
+
+
+--
+-- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tags (id, version, name) FROM stdin;
+7	0	admin
+66	0	getting started
+\.
+
+
+--
+-- Data for Name: widget_def_intent; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY widget_def_intent (id, version, receive, send, intent_id, widget_definition_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: widget_def_intent_data_types; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY widget_def_intent_data_types (intent_data_type_id, widget_definition_intent_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: widget_definition; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY widget_definition (id, version, visible, image_url_large, image_url_small, singleton, width, widget_version, height, widget_url, widget_guid, display_name, background, universal_name, descriptor_url, description) FROM stdin;
+6	0	t	themes/common/images/adm-tools/Users64.png	themes/common/images/adm-tools/Users24.png	f	818	1.0	440	admin/UserManagement.gsp	70dbae46-84f5-417f-b030-c481f767ba60	Users	f	\N	\N	
+9	0	f	themes/common/images/adm-tools/Users64.png	themes/common/images/adm-tools/Users24.png	f	581	1.0	440	admin/UserEdit.gsp	4495e587-6f62-4e37-b21c-7a4038e45c30	User Editor	f	\N	\N	
+11	0	t	themes/common/images/adm-tools/Widgets64.png	themes/common/images/adm-tools/Widgets24.png	f	818	1.0	440	admin/WidgetManagement.gsp	2b5cc758-d9bd-406d-8faf-b78d4be9ebc4	Widgets	f	\N	\N	
+13	0	f	themes/common/images/adm-tools/Widgets64.png	themes/common/images/adm-tools/Widgets24.png	f	581	1.0	493	admin/WidgetEdit.gsp	836dd5a8-b892-443f-b268-5aee903846a0	Widget Editor	f	\N	\N	
+15	0	t	themes/common/images/adm-tools/Groups64.png	themes/common/images/adm-tools/Groups24.png	f	818	1.0	440	admin/GroupManagement.gsp	86e3de83-34e5-4d39-b766-332228f23911	Groups	f	\N	\N	
+17	0	f	themes/common/images/adm-tools/Groups64.png	themes/common/images/adm-tools/Groups24.png	f	581	1.0	440	admin/GroupEdit.gsp	519bd55f-8cfc-4c45-9259-5ba8fb886087	Group Editor	f	\N	\N	
+19	0	t	themes/common/images/adm-tools/Dashboards64.png	themes/common/images/adm-tools/Dashboards24.png	f	818	1.0	440	admin/GroupDashboardManagement.gsp	7f6c38ae-9a73-4e1d-a65f-1ce46f664c5f	Group Dashboards	f	\N	\N	
+21	0	f	themes/common/images/adm-tools/Dashboards64.png	themes/common/images/adm-tools/Dashboards24.png	f	581	1.0	440	admin/DashboardEdit.gsp	79b46039-f4dd-454b-b1e2-234dac1954e5	Dashboard Editor	f	\N	\N	
+23	0	t	themes/common/images/adm-tools/Stacks64.png	themes/common/images/adm-tools/Stacks24.png	f	818	1.0	440	admin/StackManagement.gsp	a7dd4746-93e7-462d-84c1-651ab1183c0b	Stacks	f	\N	\N	
+25	0	f	themes/common/images/adm-tools/Stacks64.png	themes/common/images/adm-tools/Stacks24.png	f	581	1.0	440	admin/StackEdit.gsp	a5d31c9c-dbb6-41fc-8719-f4875dbdbc8f	Stack Editor	f	\N	\N	
+65	1	t	http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/images/ss_logo_small.png	http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/images/ss_logo_small.png	f	800	0.1a	800	http://<%= ENV['OPENSHIFT_GEAR_DNS'] %>/	881d57bf-00d0-64d4-aeb7-efda80f3c2c0	Getting Started	f	gettingstarted.dev.patvmackinc.com	\N	Sample widget to get you started with OWF widget development
+\.
+
+
+--
+-- Data for Name: widget_definition_widget_types; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY widget_definition_widget_types (widget_definition_id, widget_type_id) FROM stdin;
+6	2
+9	2
+11	2
+13	2
+15	2
+17	2
+19	2
+21	2
+23	2
+25	2
+65	1
+\.
+
+
+--
+-- Data for Name: widget_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY widget_type (id, version, name) FROM stdin;
+1	0	standard
+3	0	marketplace
+4	0	metric
+2	10	administration
+\.
+
+
+--
+-- Name: dashboard_guid_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY dashboard
+    ADD CONSTRAINT dashboard_guid_key UNIQUE (guid);
+
+
+--
+-- Name: dashboard_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY dashboard
+    ADD CONSTRAINT dashboard_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: domain_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY domain_mapping
+    ADD CONSTRAINT domain_mapping_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: intentPK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY intent
+    ADD CONSTRAINT "intentPK" PRIMARY KEY (id);
+
+
+--
+-- Name: intent_action_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY intent
+    ADD CONSTRAINT intent_action_key UNIQUE (action);
+
+
+--
+-- Name: intent_data_typePK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY intent_data_type
+    ADD CONSTRAINT "intent_data_typePK" PRIMARY KEY (id);
+
+
+--
+-- Name: owf_group_people_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY owf_group_people
+    ADD CONSTRAINT owf_group_people_pkey PRIMARY KEY (group_id, person_id);
+
+
+--
+-- Name: owf_group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY owf_group
+    ADD CONSTRAINT owf_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: person_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY person
+    ADD CONSTRAINT person_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: person_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY person
+    ADD CONSTRAINT person_username_key UNIQUE (username);
+
+
+--
+-- Name: person_widget_definition_person_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY person_widget_definition
+    ADD CONSTRAINT person_widget_definition_person_id_key UNIQUE (person_id, widget_definition_id);
+
+
+--
+-- Name: person_widget_definition_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY person_widget_definition
+    ADD CONSTRAINT person_widget_definition_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pk_databasechangelog; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY databasechangelog
+    ADD CONSTRAINT pk_databasechangelog PRIMARY KEY (id, author, filename);
+
+
+--
+-- Name: pk_databasechangeloglock; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY databasechangeloglock
+    ADD CONSTRAINT pk_databasechangeloglock PRIMARY KEY (id);
+
+
+--
+-- Name: pk_stack_groups; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY stack_groups
+    ADD CONSTRAINT pk_stack_groups PRIMARY KEY (group_id, stack_id);
+
+
+--
+-- Name: preference_path_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY preference
+    ADD CONSTRAINT preference_path_key UNIQUE (path, namespace, user_id);
+
+
+--
+-- Name: preference_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY preference
+    ADD CONSTRAINT preference_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: requestmap_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY requestmap
+    ADD CONSTRAINT requestmap_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: requestmap_url_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY requestmap
+    ADD CONSTRAINT requestmap_url_key UNIQUE (url);
+
+
+--
+-- Name: role_authority_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY role
+    ADD CONSTRAINT role_authority_key UNIQUE (authority);
+
+
+--
+-- Name: role_people_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY role_people
+    ADD CONSTRAINT role_people_pkey PRIMARY KEY (role_id, person_id);
+
+
+--
+-- Name: role_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY role
+    ADD CONSTRAINT role_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: stackPK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY stack
+    ADD CONSTRAINT "stackPK" PRIMARY KEY (id);
+
+
+--
+-- Name: stack_stack_context_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY stack
+    ADD CONSTRAINT stack_stack_context_key UNIQUE (stack_context);
+
+
+--
+-- Name: tag_links_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tag_links
+    ADD CONSTRAINT tag_links_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tags_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tags
+    ADD CONSTRAINT tags_name_key UNIQUE (name);
+
+
+--
+-- Name: tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tags
+    ADD CONSTRAINT tags_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: widget_def_intentPK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY widget_def_intent
+    ADD CONSTRAINT "widget_def_intentPK" PRIMARY KEY (id);
+
+
+--
+-- Name: widget_definition_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY widget_definition
+    ADD CONSTRAINT widget_definition_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: widget_definition_widget_guid_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY widget_definition
+    ADD CONSTRAINT widget_definition_widget_guid_key UNIQUE (widget_guid);
+
+
+--
+-- Name: widget_definition_widget_types_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY widget_definition_widget_types
+    ADD CONSTRAINT widget_definition_widget_types_pkey PRIMARY KEY (widget_definition_id, widget_type_id);
+
+
+--
+-- Name: widget_typePK; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY widget_type
+    ADD CONSTRAINT "widget_typePK" PRIMARY KEY (id);
+
+
+--
+-- Name: fk28113703b197b21; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY owf_group_people
+    ADD CONSTRAINT fk28113703b197b21 FOREIGN KEY (group_id) REFERENCES owf_group(id);
+
+
+--
+-- Name: fk2811370c1f5e0b3; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY owf_group_people
+    ADD CONSTRAINT fk2811370c1f5e0b3 FOREIGN KEY (person_id) REFERENCES person(id);
+
+
+--
+-- Name: fk28b75e7870b353; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY role_people
+    ADD CONSTRAINT fk28b75e7870b353 FOREIGN KEY (role_id) REFERENCES role(id);
+
+
+--
+-- Name: fk28b75e78c1f5e0b3; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY role_people
+    ADD CONSTRAINT fk28b75e78c1f5e0b3 FOREIGN KEY (person_id) REFERENCES person(id);
+
+
+--
+-- Name: fk6f5c17c4293a835c; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY person_widget_definition
+    ADD CONSTRAINT fk6f5c17c4293a835c FOREIGN KEY (widget_definition_id) REFERENCES widget_definition(id);
+
+
+--
+-- Name: fk6f5c17c4c1f5e0b3; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY person_widget_definition
+    ADD CONSTRAINT fk6f5c17c4c1f5e0b3 FOREIGN KEY (person_id) REFERENCES person(id);
+
+
+--
+-- Name: fk7c35d6d45a3b441d; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tag_links
+    ADD CONSTRAINT fk7c35d6d45a3b441d FOREIGN KEY (tag_id) REFERENCES tags(id);
+
+
+--
+-- Name: fk8a59132fd46c6faa; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY intent_data_types
+    ADD CONSTRAINT fk8a59132fd46c6faa FOREIGN KEY (intent_data_type_id) REFERENCES intent_data_type(id);
+
+
+--
+-- Name: fk8a59d92f293a835c; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_definition_widget_types
+    ADD CONSTRAINT fk8a59d92f293a835c FOREIGN KEY (widget_definition_id) REFERENCES widget_definition(id);
+
+
+--
+-- Name: fk8a59d92fd41a6fad; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_def_intent_data_types
+    ADD CONSTRAINT fk8a59d92fd41a6fad FOREIGN KEY (intent_data_type_id) REFERENCES intent_data_type(id);
+
+
+--
+-- Name: fk8a59d92fd46c6f7c; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_definition_widget_types
+    ADD CONSTRAINT fk8a59d92fd46c6f7c FOREIGN KEY (widget_type_id) REFERENCES widget_type(id);
+
+
+--
+-- Name: fk8a59d92fd46c6faa; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY intent_data_types
+    ADD CONSTRAINT fk8a59d92fd46c6faa FOREIGN KEY (intent_id) REFERENCES intent(id);
+
+
+--
+-- Name: fk8a59d92fd46c6fab; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_def_intent
+    ADD CONSTRAINT fk8a59d92fd46c6fab FOREIGN KEY (widget_definition_id) REFERENCES widget_definition(id);
+
+
+--
+-- Name: fk8a59d92fd46c6fac; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_def_intent
+    ADD CONSTRAINT fk8a59d92fd46c6fac FOREIGN KEY (intent_id) REFERENCES intent(id);
+
+
+--
+-- Name: fk8a59d92fd46c6fad; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY widget_def_intent_data_types
+    ADD CONSTRAINT fk8a59d92fd46c6fad FOREIGN KEY (widget_definition_intent_id) REFERENCES widget_def_intent(id);
+
+
+--
+-- Name: fk9584ab6b3b197b21; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY stack_groups
+    ADD CONSTRAINT fk9584ab6b3b197b21 FOREIGN KEY (group_id) REFERENCES owf_group(id);
+
+
+--
+-- Name: fk9584ab6b6b3a1281; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY stack_groups
+    ADD CONSTRAINT fk9584ab6b6b3a1281 FOREIGN KEY (stack_id) REFERENCES stack(id);
+
+
+--
+-- Name: fka8fcbcdb8656347d; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY preference
+    ADD CONSTRAINT fka8fcbcdb8656347d FOREIGN KEY (user_id) REFERENCES person(id);
+
+
+--
+-- Name: fkc18aea94372cc5a; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboard
+    ADD CONSTRAINT fkc18aea94372cc5a FOREIGN KEY (created_by_id) REFERENCES person(id);
+
+
+--
+-- Name: fkc18aea946b3a1281; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboard
+    ADD CONSTRAINT fkc18aea946b3a1281 FOREIGN KEY (stack_id) REFERENCES stack(id);
+
+
+--
+-- Name: fkc18aea947028b8db; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboard
+    ADD CONSTRAINT fkc18aea947028b8db FOREIGN KEY (edited_by_id) REFERENCES person(id);
+
+
+--
+-- Name: fkc18aea948656347d; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY dashboard
+    ADD CONSTRAINT fkc18aea948656347d FOREIGN KEY (user_id) REFERENCES person(id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

@@ -1,0 +1,78 @@
+#!/bin/bash -e
+
+case "$1" in
+  -v|--version)
+    version="$2"
+esac
+
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+source ${OPENSHIFT_OWF_DIR}/bin/util
+
+SYSTEM_JBOSSEWS_DIR="/etc/alternatives/jbossews-2.0"
+
+if [ ! -d ${SYSTEM_JBOSSEWS_DIR} ]; then
+  echo "Couldn't find system jbossews dir at ${SYSTEM_JBOSSEWS_DIR}" 1>&2
+  exit 127
+fi
+
+# If there's a symlinked webapps directory, we're migrating to 0.0.2
+migrate_webapps=false
+if [ -h "${OPENSHIFT_OWF_DIR}/webapps" ]; then
+  migrate_webapps=true
+fi
+
+# If migrating, replace the old symlinked 'webapps' with a physical directory
+if $migrate_webapps; then
+  rm -f ${OPENSHIFT_OWF_DIR}/webapps
+fi
+
+mkdir -p ${OPENSHIFT_OWF_DIR}/{run,tmp,conf,logs,webapps}
+mkdir -p ${OPENSHIFT_HOMEDIR}/.m2
+
+# Set up the config directory in the user repository template
+cp -r ${OPENSHIFT_OWF_DIR}/versions/{shared,${version}}/configuration/* ${OPENSHIFT_OWF_DIR}/template/.openshift/config
+
+# Link the system Tomcat binaries to the cart Tomcat instance directory
+ln -sf ${SYSTEM_JBOSSEWS_DIR}/bin/bootstrap.jar ${OPENSHIFT_OWF_DIR}/bin/bootstrap.jar
+ln -sf ${SYSTEM_JBOSSEWS_DIR}/bin/commons-daemon.jar ${OPENSHIFT_OWF_DIR}/bin/commons-daemon.jar
+ln -sf ${SYSTEM_JBOSSEWS_DIR}/bin/tomcat-juli.jar ${OPENSHIFT_OWF_DIR}/bin/tomcat-juli.jar
+
+# Need to remove link: -f gets confused as this is a link to a link
+[ -e ${OPENSHIFT_OWF_DIR}/lib ] && rm ${OPENSHIFT_OWF_DIR}/lib
+ln -sf ${SYSTEM_JBOSSEWS_DIR}/lib ${OPENSHIFT_OWF_DIR}/lib
+
+# Link the user-controlled configurations to the Tomcat conf directory
+ln -sf ${OPENSHIFT_REPO_DIR}/.openshift/config/web.xml ${OPENSHIFT_OWF_DIR}/conf
+ln -sf ${OPENSHIFT_REPO_DIR}/.openshift/config/tomcat-users.xml ${OPENSHIFT_OWF_DIR}/conf
+ln -sf ${OPENSHIFT_REPO_DIR}/.openshift/config/postgresql_module.xml ${OPENSHIFT_OWF_DIR}/conf
+ln -sf ${OPENSHIFT_REPO_DIR}/.openshift/config/catalina.properties ${OPENSHIFT_OWF_DIR}/conf
+ln -sf ${OPENSHIFT_REPO_DIR}/.openshift/config/catalina.policy ${OPENSHIFT_OWF_DIR}/conf
+ln -sf ${OPENSHIFT_REPO_DIR}/.openshift/config/logging.properties ${OPENSHIFT_OWF_DIR}/conf
+ln -sf ${OPENSHIFT_REPO_DIR}/.openshift/config/owf ${OPENSHIFT_OWF_DIR}/conf
+
+# If migrating, copy the existing app repo contents to the new webapps directory
+if $migrate_webapps; then
+  if [ -d ${OPENSHIFT_REPO_DIR}/webapps ]; then
+    shopt -s dotglob
+    mv ${OPENSHIFT_REPO_DIR}/webapps/* ${OPENSHIFT_OWF_DIR}/webapps/
+    shopt -u dotglob
+  fi
+fi
+
+echo $OPENSHIFT_OWF_DIR
+mkdir -p $OPENSHIFT_OWF_DIR/postgresql/{log,pid,socket,data,run}
+
+env_dir="${OPENSHIFT_OWF_DIR}/env"
+
+echo 'Generating username and password'
+
+username=$(generate_username)
+# Force the username to be all lowercase so it works properly with psql
+username=$(echo "${username}" | tr '[:upper:]' '[:lower:]')
+password=$(generate_password)
+
+set_env_var 'OPENSHIFT_POSTGRESQL_DB_USERNAME' $username $env_dir
+set_env_var 'OPENSHIFT_OWF_DB_USERNAME' $username $env_dir
+set_env_var 'PGUSER' $username $env_dir
+set_env_var 'OPENSHIFT_POSTGRESQL_DB_PASSWORD' $password $env_dir
+set_env_var 'OPENSHIFT_OWF_DB_PASSWORD' $password $env_dir

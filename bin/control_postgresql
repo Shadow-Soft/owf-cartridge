@@ -1,0 +1,214 @@
+#!/bin/bash -ue
+
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+function _pg_stop {
+  pg_ctl stop -w -t 30 "$@"
+}
+
+function _is_running {
+  # Can't use pg_ctl status here because it doesn't mean the db is done starting up
+  psql -l -U postgres &> /dev/null
+  return $?
+}
+
+function wait_for_postgres_availability {
+  for i in {1..30}; do
+    _is_running && return 0
+    sleep 1
+  done
+  return 1
+}
+
+function start {
+  if ! _is_running; then
+    echo "Starting Postgres"
+
+    pg_ctl start
+    wait_for_postgres_availability || error "Could not start Postgres" 70
+
+    echo "Postgres started"
+  else
+    echo "Postgres already running"
+  fi
+  return 0
+}
+
+function stop {
+  if _is_running; then
+    _pg_stop -m smart ||
+      _pg_stop -m fast ||
+      _pg_stop -m immediate ||
+      pkill postgres
+    if _is_running; then
+      error "Could not stop Postgres" 70
+    else
+      truncate -s0 $OPENSHIFT_POSTGRESQL_DB_PID
+      echo "Postgres stopped"
+    fi
+  else
+    echo "Postgres already stopped"
+  fi
+  return 0
+}
+
+function status {
+  if _is_running; then
+    client_result "Postgres is running"
+  else
+    client_result "Postgres is stopped"
+  fi
+
+  exit 0
+}
+
+function pre_snapshot {
+  start
+
+  echo $OPENSHIFT_POSTGRESQL_DB_USERNAME > $OPENSHIFT_DATA_DIR/postgresql_db_username
+  echo $OPENSHIFT_APP_NAME > $OPENSHIFT_DATA_DIR/postgresql_db_dbname
+  echo $OPENSHIFT_GEAR_UUID > $OPENSHIFT_DATA_DIR/postgresql_db_uuid
+
+  # Remove any statements that modify the postgres role
+  local rexp="^\s*\(DROP\|CREATE\|ALTER\)\s*ROLE\s*postgres.*"
+  pg_dumpall -c -U postgres | \
+    sed "/$rexp/d;" | \
+    gzip -9 > $OPENSHIFT_DATA_DIR/postgresql_dump_snapshot.gz
+
+  if [ ${PIPESTATUS[0]} -ne 0 ]
+  then
+    warning "WARNING!  Could not dump Postgres databases!  Continuing anyway"
+    rm -f $OPENSHIFT_DATA_DIR/postgresql_dump_snapshot.gz
+  fi
+
+  stop
+}
+
+function post_restore {
+  local dump_file=$OPENSHIFT_DATA_DIR/postgresql_dump_snapshot.gz
+
+  local new_user=$OPENSHIFT_POSTGRESQL_DB_USERNAME
+  local old_user=$(< $OPENSHIFT_DATA_DIR/postgresql_db_username)
+  local uid=$(< $OPENSHIFT_DATA_DIR/postgresql_db_uuid)
+
+  local new_db=$OPENSHIFT_APP_NAME
+  local old_db=$(< $OPENSHIFT_DATA_DIR/postgresql_db_dbname)
+
+  if [ -f $dump_file ]
+  then
+    start
+    # Drop the existing database
+    {
+      echo "
+      DROP DATABASE IF EXISTS \"${new_db}\";
+      " | psql -U postgres -d postgres
+    } || error "Failed to drop existing database" 187
+
+    # Ensure any DROP DATABASE commands don't fail
+    local rexp="s#\(DROP DATABASE\) \(.*\)#\\1 IF EXISTS \\2#g;"
+
+    # Restore old postgres database
+    zcat $dump_file | sed "${rexp}" | psql -U postgres -d postgres &> /dev/null
+
+    if [ $? -ne 0 ]
+    then
+      warning "Error: Could not import Postgres Database!  Continuing..."
+    fi
+
+    # Rename old database
+    {
+      echo "
+      ALTER DATABASE \"${old_db}\" RENAME TO \"${new_db}\";
+      " | psql -U postgres -d postgres
+    } || error "Failed to rename database" 187
+
+    {
+      # We want to change the default old user in case the app has its own users
+      # We also need to check the UID because v1 creates tables owned by the user
+      for db in `psql -qAt -U postgres -d postgres -c "SELECT datname FROM pg_database JOIN pg_authid ON pg_database.datdba = pg_authid.oid WHERE rolname = '${old_user}' OR rolname = '${uid}'"`
+      do
+        echo "
+        ALTER DATABASE \"${db}\" OWNER TO \"${new_user}\";
+        " | psql -U postgres -d postgres
+      done
+    } || error "Failed to change owner of imported database" 187
+
+    # Change ownership of tables
+    {
+      echo "
+      REASSIGN OWNED BY \"${old_user}\" TO \"${new_user}\";
+      " | psql -U postgres -d $new_db
+    } || error "Failed to change owner of imported tables" 187
+
+    # If the user names are different, drop the old role
+    if [ "${old_user}" != "${new_user}" ]
+    then
+      # Remove old user
+      {
+        echo "
+        DROP ROLE \"${old_user}\";
+        " | psql -U postgres -d postgres
+      } || error "Failed to remove old user" 187
+    fi
+
+    cleanup_dump
+  else
+    warning "Postgres restore attempted, but no dump found"
+    warning "${dump_file} does not exist"
+  fi
+}
+
+function cleanup_dump {
+  local dumpfiles=(
+    postgresql_dump_snapshot.gz
+    postgresql_db_username
+    postgresql_db_dbname
+  )
+  for file in "${dumpfiles[@]}"
+  do
+    rm -f $OPENSHIFT_DATA_DIR/$file
+  done
+}
+
+function reload {
+  pg_ctl reload
+}
+
+function tidy {
+  truncate -s0 $OPENSHIFT_POSTGRESQL_DB_LOG_DIR/*
+  psql -c 'vacuum analyze;' -U postgres
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  status)
+    status
+  ;;
+  restart)
+    stop
+    start
+  ;;
+  pre-snapshot)
+    pre_snapshot
+  ;;
+  pre-restore)
+    cleanup_dump
+  ;;
+  post-restore)
+    post_restore
+  ;;
+  reload)
+    reload
+  ;;
+  tidy)
+    tidy
+  ;;
+  *)
+    echo 0
+  ;;
+esac
