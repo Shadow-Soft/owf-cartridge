@@ -2,7 +2,7 @@
 
 Summary:       Provides OWF support for OpenShift
 Name:          owf-cartridge
-Version: 0.8.18
+Version: 0.8.19
 Release:       1%{?dist}
 Group:         Development/Languages
 License:       ASL 2.0
@@ -75,6 +75,11 @@ fi
 %doc %{cartridgedir}/LICENSE
 
 %changelog
+* Fri Feb 14 2014 Bret Frederick <bret.frederick@patvmackinc.com> 0.8.19-1
+- add owf.war back in (bret.frederick@patvmackinc.com)
+- changed manifest source url to point to the owf-cartridge location (was owf-
+  widget-cartridge location) (bret.frederick@patvmackinc.com)
+
 * Fri Feb 14 2014 Bret Frederick <bret.frederick@patvmackinc.com> 0.8.18-1
 - put owf.war back in.  changed manifest source url to point to the owf-
   cartridge location (was owf-widget-cartridge location)
