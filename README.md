@@ -1,4 +1,4 @@
-#Ozone Widget Cartridge on OpenShift
+#Ozone Widget Framework Cartridge on OpenShift
 
 
 This git repository contains the source for the owf-widget-cartridge RPM package.
@@ -60,7 +60,7 @@ using the OpenShift Online management console
 * Navigate to "MyApps" then to "Applications"
 * Select "Add Application" (or create first application if you don't have any yet)
 * Scroll down to the "Code Anything" section and enter the manifest URL in the "URL to a cartridge definition"
-  https://raw.github.com/Shadow-Soft/owf-widget-cartridge/master/metadata/manifest.yml
+  https://raw.github.com/Shadow-Soft/owf-cartridge/master/metadata/manifest.yml
 
 ##Using the Cartridge
 Once deployed, the source repository (Git repo) provided by the create-app command contains all of the Ozone Widget Framework configuration information under /path/to/repo/.openshift/configuration/owf directory

@@ -2,7 +2,7 @@ Name: owf
 Cartridge-Short-Name: OWF
 Cartridge-Vendor: shadowsoft
 Cartridge-Version: '0.0.1'
-Source-Url: https://github.com/Shadow-Soft/owf-widget-cartridge.git
+Source-Url: https://github.com/Shadow-Soft/owf-cartridge.git
 Compatible-Versions: ['0.0.2', '0.0.3']
 Display-Name: Ozone Widget Framework 7 (OWF 7)
 Description: "Build and deploy Ozone Widgets in the cloud."

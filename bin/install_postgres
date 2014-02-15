@@ -40,7 +40,7 @@ cp $conf_dir/psqlrc $HOME/.psqlrc
 echo "*:*:*:${username}:${password}" > $HOME/.pgpass
 chmod 0600 $HOME/.pgpass
 
-conn_url='postgresql://$OPENSHIFT_POSTGRESQL_DB_HOST:$OPENSHIFT_POSTGRESQL_DB_PORT'
+conn_url=postgresql://$OPENSHIFT_POSTGRESQL_DB_HOST:$OPENSHIFT_POSTGRESQL_DB_PORT
 
 client_result ""
 client_result "PostgreSQL ${version} database added.  Please make note of these credentials:"
