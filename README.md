@@ -26,7 +26,7 @@ Prerequisites
 
 * Clone & build the repo
 
-        > git clone https://github.com/Shadow-Soft/owf-widget-cartridge.git
+        > git clone https://github.com/Shadow-Soft/owf-cartridge.git
 
         > cd owf-cartridge
 
