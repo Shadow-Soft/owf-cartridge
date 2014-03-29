@@ -37,7 +37,7 @@ using the OpenShift Online management console
   
 \* Note the use of a single cloud based configuration management repository from which
 the cartridge is being deployed.  The ability to deploy directly from a CM repo to multiple
-PaaS environment is a benefit to the Software Development Lifecycle (dev, integrate, test)
+PaaS environments is a benefit to the Software Development Lifecycle (dev, integrate, test)
 
 \* OWF can take a few minutes to start up, especially if running in a "small" gear.  Make 
 a note of the URL and move on to the next step to give the framework enough time to spin up.
@@ -124,8 +124,8 @@ and you'll see a slightly modified version of the standard OpenShift Tomcat Cart
 
 \* The difference in the Widget Cartridge template is that is has the OWF JavaScript API
 bundled.  In the application there are two sections that exercise the JavaScript API.
-However, the big deal about Ozone it's the ability for Widgets to communicate with each
-other (called "Inter-Widget Communication").  This gives the widgets the ability to control 
+However, the big deal about Ozone is the ability for Widgets to communicate with each
+other, called "Inter-Widget Communication".  This gives the widgets the ability to control 
 other widgets, pass data to other widgets, and receive instructions and data from other Widgets.
 
 \* If you've seen the standard OpenShift Tomcat cartridge demonstration, this may be a good time
