@@ -42,9 +42,8 @@ Using the OpenShift Online management console
 * Scroll down to the "Code Anything" section and enter the manifest URL in the "URL to a cartridge definition"
  [https://raw.githubusercontent.com/Shadow-Soft/owf-widget-cartridge/master/metadata/manifest.yml](https://raw.githubusercontent.com/Shadow-Soft/owf-widget-cartridge/master/metadata/manifest.yml)
 
-\* Once the Widget is created, there will be a "Widget Descriptor URL".  Copy this URL into your paste buffer (ctrl-c) 
+\* Once the Widget is created, there will be a "Widget Descriptor URL" like "https://widget1-<yourdomain>.rhcloud.com/widget.html".  Copy this URL into your paste buffer (ctrl-c) 
 
-![widget-descriptor-url](screenshots/widget-descriptor-url.png)
 
 ##Step 3: Configure the OWF desktop (optional)
 \* This step is optional, but recommended.  OWF comes out of the box with a tabbed layout, which can be a little difficult to use.  Re-configuring it to use the "Desktop" layout makes things a little easier.
