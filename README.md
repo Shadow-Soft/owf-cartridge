@@ -53,6 +53,8 @@ Use the RedHat Cloud (rhc) command line utility to create a new Ozone applicatio
         > rhc app create ozone shadowsoft-owf-7.0
 
 ###OpenShift Online
+Follow the [Walkthrough](Walkthrough.md) for a complete demo-ready configuration.
+
 using the RedHat Cloud (rhc) command line client utility
 
         > rhc create-app ozone https://raw.github.com/Shadow-Soft/owf-widget-cartridge/master/metadata/manifest.yml
