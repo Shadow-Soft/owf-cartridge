@@ -1,7 +1,7 @@
 #Ozone Widget Framework Cartridge on OpenShift
 
 
-This git repository contains the source for the owf-widget-cartridge RPM package.
+This git repository contains the source for the owf-cartridge RPM package.
 
 **Dependencies:**
 * JBoss EWS Cartridge (openshift-origin-cartridge-jbossews)
@@ -14,7 +14,7 @@ This git repository contains the source for the owf-widget-cartridge RPM package
 
 Prerequisites
 
-* RHEL, CentOS, or Fedora with the "Development Tools" group installed
+* RHEL, CentOS, or Fedora with the "Development Tools" group installed.  For RHEL, the tito package is available via the [EPEL](https://fedoraproject.org/wiki/EPEL) repository.
 
 * The Tito rpm build tools
 
@@ -26,9 +26,11 @@ Prerequisites
 
 * Clone & build the repo
 
-        > git clone https://github.com/Shadow-Soft/owf-widget-cartridge.git
+        > git clone https://github.com/Shadow-Soft/owf-cartridge.git
 
-        > cd owf-widget-cartridge
+        > cd owf-cartridge
+
+        > rm -fr rel-eng
 
         > tito init (first build after cloning only)
 
