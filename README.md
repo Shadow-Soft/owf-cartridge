@@ -85,3 +85,13 @@ Once deployed, the source repository (Git repo) provided by the create-app comma
 
 ##Known Issues
 * This issue applies if deploying on OpenShift Origin (community version) on any non-RHEL system (e.g. CentOS or Fedora).  The OWF Cartridge depends on the JBossEWS cartridge (openshift-origin-cartridge-jbossews), which in turn depends on the tomcat7 package.  However, the "tomcat7" package only exists in RedHat repositories and is only accessible if you have a RedHat entitlement.  The community equivalent of "tomcat7" is the "tomcat" (ommit 7) package.  However that package does not satisfy JBossEWS cartridge dependency.
+* If the OWF cartridges do not appear in the cartridge list, execute the following commands to refresh the cartridge cache.  After the yum install, restart the mcollective service on each node:
+
+        service ruby193-mcollective restart
+
+On the broker hosts, run the following commands:
+
+        oo-admin-broker-cache --clear --console
+        oo-admin-ctl-cartridge -c import-node --activate
+        oo-admin-console-cache --clear
+
